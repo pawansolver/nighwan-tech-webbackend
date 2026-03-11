@@ -23,8 +23,14 @@ const app = express();
 // ==========================================
 // ⚙️ GLOBAL MIDDLEWARE
 // ==========================================
+// ✅ Updated CORS: Ab ye Localhost aur Live dono par chalega
 app.use(cors({
-    origin: "http://localhost:3000",
+    origin: [
+        "http://localhost:3000",
+        "https://nighwantech.com",     // Aapka live domain
+        "https://www.nighwantech.com"  // WWW wala domain
+        // (Agar Vercel ka koi link ho toh comma lagakar yahan daal dena)
+    ],
     credentials: true
 }));
 
