@@ -81,7 +81,8 @@ app.use('/api/Address', addressRoutes);
 // ==========================================
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, async () => {
+// 🔥 UPDATE: Render aur Cloudflare ke liye '0.0.0.0' add kar diya gaya hai!
+app.listen(PORT, '0.0.0.0', async () => {
     console.log(`🚀 Server is flying on port ${PORT}`);
     console.log(`📖 API Documentation: http://localhost:${PORT}/api-docs`);
 
