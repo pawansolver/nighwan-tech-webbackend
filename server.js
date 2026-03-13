@@ -21,13 +21,29 @@ dotenv.config();
 const app = express();
 
 // ==========================================
-// ⚙️ GLOBAL MIDDLEWARE
+// ⚙️ GLOBAL MIDDLEWARE (HACKER-PROOF CORS)
 // ==========================================
-// ✅ Updated CORS: Theek kiya gaya taaki Vercel block na kare
+// ✅ Sirf inhi websites ko aapke backend se baat karne ki permission hai
+const allowedOrigins = [
+    "http://localhost:3000",
+    "https://nighwantech.com",
+    "https://www.nighwantech.com",
+    "https://nighwan-tech.vercel.app" // Vercel link agar use ho raha hai
+];
+
 app.use(cors({
-    origin: '*', // Error fix karne ke liye sabhi origins allow kar diye
+    origin: function (origin, callback) {
+        // Allow requests with no origin (like mobile apps or curl requests) OR allowed origins
+        if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+            callback(null, true);
+        } else {
+            // Hacker ya kisi anjaan website ko block karne ka error
+            callback(new Error('🚨 Security Block: Not allowed by CORS!'));
+        }
+    },
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
-    allowedHeaders: ['Content-Type', 'Authorization']
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true
 }));
 
 app.use(express.json());
