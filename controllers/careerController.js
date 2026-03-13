@@ -13,16 +13,17 @@ exports.applyForJob = async (req, res) => {
             return res.status(400).json({ success: false, error: "Resume file missing hai." });
         }
 
+        // 1. Database mein data save karo (Fast process - isko await karenge)
         const newApplication = await Application.create({
             fullName: fullName || "Unknown",
             email: email || "No Email",
             phone: phone || "No Phone",
             appliedFor: appliedFor || "Not Specified",
             department: department || "General",
-            // 🔥 FIX 1: Original name ki jagah file ka exact server path save kiya, taaki baad mein admin panel se download ho sake
             resumePath: resumeFile.path
         });
 
+        // 2. Email Transporter Setup
         const transporter = nodemailer.createTransport({
             host: process.env.EMAIL_HOST,
             port: Number(process.env.EMAIL_PORT),
@@ -33,7 +34,10 @@ exports.applyForJob = async (req, res) => {
             },
         });
 
-        await transporter.sendMail({
+        // 🔥 INDUSTRY STANDARD FIX (Fire and Forget) 🔥
+        // Yahan se 'await' hata diya gaya hai. 
+        // Ab Node.js email bhejta rahega background mein, par user ko wait nahi karwayega.
+        transporter.sendMail({
             from: `"Nighwan Career" <${process.env.EMAIL_USER}>`,
             to: "support@nighwantech.com",
             subject: `New Application: ${appliedFor || 'New Role'} - ${fullName || ''}`,
@@ -51,14 +55,17 @@ exports.applyForJob = async (req, res) => {
             `,
             attachments: [{
                 filename: resumeFile.originalname,
-                // 🔥 FIX 2: buffer ko hata kar path lagaya. Ab corrupt nahi hogi PDF!
                 path: resumeFile.path
             }]
+        }).catch(err => {
+            // Agar email bhejne mein fail hua toh server crash nahi hoga, bas console mein log aayega
+            console.error("🚨 Background Email Sending Failed:", err);
         });
 
+        // 3. User ko turant success response de do (Timeout bypass)
         res.status(200).json({
             success: true,
-            message: "Application saved in SQL & Email sent!",
+            message: "Application saved successfully! (Email processing in background)",
             data: newApplication
         });
 
