@@ -7,7 +7,12 @@ const swaggerDocument = {
         version: '1.0.0',
         description: 'Slider, Contact, Career, and Authentication APIs',
     },
+    // 🔥 BAS YAHAN UPDATE HUA HAI: Ab ye Local aur Global (Live) dono par chalega
     servers: [
+        {
+            url: 'https://nighwan-tech-webbackend.onrender.com',
+            description: 'Live Server (Global Access)',
+        },
         {
             url: `http://localhost:${process.env.PORT || 5000}`,
             description: 'Local Server',
