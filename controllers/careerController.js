@@ -23,20 +23,27 @@ exports.applyForJob = async (req, res) => {
             resumePath: resumeFile.path
         });
 
-        // 2. Email Transporter Setup
+        // ==========================================
+        // 🛠️ YAHI CHANGE HUA HAI: Email Transporter Setup
+        // ==========================================
         const transporter = nodemailer.createTransport({
-            host: process.env.EMAIL_HOST,
-            port: Number(process.env.EMAIL_PORT),
+            host: process.env.EMAIL_HOST || 'smtp.gmail.com',
+            port: Number(process.env.EMAIL_PORT) || 465,
             secure: true,
             auth: {
                 user: process.env.EMAIL_USER,
-                pass: process.env.EMAIL_PASS,
+                pass: process.env.EMAIL_PASS, // Dhyan rahe, yahan 16-digit App password chahiye
             },
+            // 🔥 INDUSTRY FIX 1: Render ka IPv6 error (ENETUNREACH) block karega
+            family: 4,
+
+            // 🔥 INDUSTRY FIX 2: Cloud par SSL verification error ko rokkega
+            tls: {
+                rejectUnauthorized: false
+            }
         });
 
         // 🔥 INDUSTRY STANDARD FIX (Fire and Forget) 🔥
-        // Yahan se 'await' hata diya gaya hai. 
-        // Ab Node.js email bhejta rahega background mein, par user ko wait nahi karwayega.
         transporter.sendMail({
             from: `"Nighwan Career" <${process.env.EMAIL_USER}>`,
             to: "support@nighwantech.com",
@@ -58,7 +65,6 @@ exports.applyForJob = async (req, res) => {
                 path: resumeFile.path
             }]
         }).catch(err => {
-            // Agar email bhejne mein fail hua toh server crash nahi hoga, bas console mein log aayega
             console.error("🚨 Background Email Sending Failed:", err);
         });
 
