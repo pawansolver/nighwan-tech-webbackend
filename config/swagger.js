@@ -371,7 +371,7 @@ const swaggerDocument = {
         },
 
         // ==========================================
-        // 🔐 AUTHENTICATION & USERS MODULE (7 Operations)
+        // 🔐 AUTHENTICATION & USERS MODULE (8 Operations)
         // ==========================================
 
         // 1. SIGNUP (Public)
@@ -441,6 +441,29 @@ const swaggerDocument = {
                     }
                 },
                 responses: { 200: { description: 'Reset link sent to email' }, 404: { description: 'Email not found' } }
+            }
+        },
+
+        // 3.5 RESET PASSWORD (Public) - 🔥 NEW ADDITION
+        '/api/auth/reset-password': {
+            post: {
+                tags: ['Authentication'],
+                summary: '3.5. Reset Password (Using Token)',
+                requestBody: {
+                    required: true,
+                    content: {
+                        'application/json': {
+                            schema: {
+                                type: 'object',
+                                properties: {
+                                    token: { type: 'string', example: 'your_reset_token_here' },
+                                    newPassword: { type: 'string', example: 'NewStrongPassword@123' }
+                                }
+                            }
+                        }
+                    }
+                },
+                responses: { 200: { description: 'Password updated successfully' }, 400: { description: 'Token invalid or expired' } }
             }
         },
 
