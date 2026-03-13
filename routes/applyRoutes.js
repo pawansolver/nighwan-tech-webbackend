@@ -3,13 +3,28 @@
 const express = require('express');
 const router = express.Router();
 const multer = require('multer');
+const fs = require('fs'); // 🔥 FIX: File system import kiya
+const path = require('path'); // 🔥 FIX: Path import kiya
 const auth = require('../middleware/auth'); // 🛡️ Security Guard
 const careerController = require('../controllers/careerController'); // 🔥 Controller ko import kiya
 
+// ==========================================
+// 🛠️ FIX: Folder Creation Logic for Render
+// ==========================================
+const uploadDir = path.join(process.cwd(), 'uploads');
+if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir, { recursive: true });
+}
+
 // 1. Multer Setup (File Upload ke liye)
 const storage = multer.diskStorage({
-    destination: (req, file, cb) => { cb(null, 'uploads/'); },
-    filename: (req, file, cb) => { cb(null, Date.now() + '-' + file.originalname); }
+    destination: (req, file, cb) => {
+        // 🔥 FIX: Hardcoded 'uploads/' ki jagah absolute path (uploadDir) use kiya
+        cb(null, uploadDir);
+    },
+    filename: (req, file, cb) => {
+        cb(null, Date.now() + '-' + file.originalname);
+    }
 });
 const upload = multer({ storage: storage });
 
