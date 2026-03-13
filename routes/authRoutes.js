@@ -10,7 +10,10 @@ const auth = require('../middleware/auth');
 // --- 1. Public Routes (Inke liye login nahi chahiye) ---
 router.post('/signup', validateRequest(signupSchema), authController.signup);
 router.post('/login', validateRequest(loginSchema), authController.login);
+
+// 🔥 Forgot & Reset Password Routes
 router.post('/forgot-password', authController.forgotPassword);
+router.post('/reset-password', authController.resetPassword); // Naya route add kar diya
 
 // --- 2. Admin/Management Routes (Ab yahan 'auth' lagana compulsory hai) ---
 // Har route ke beech mein 'auth' likhiye taaki Token check ho sake
