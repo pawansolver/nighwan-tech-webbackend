@@ -2,32 +2,31 @@ const express = require('express');
 const router = express.Router();
 const sliderController = require('../controllers/sliderController');
 const auth = require('../middleware/auth');
-const upload = require('../middleware/upload'); // Slider image upload ke liye
+const upload = require('../middleware/upload');
 
 // ==========================================
-// 🌍 PUBLIC ROUTE (Frontend Fetch)
+// 🌍 PUBLIC ROUTES (Testing mode: Auth temporary hata diya)
 // ==========================================
+
+// 1. Frontend fetch (Active sliders)
 router.get('/', sliderController.getSliders);
 
-// ==========================================
-// 🛡️ ADMIN PROTECTED ROUTES (Token + Upload)
-// ==========================================
+// 2. Admin list (Saare sliders) - 🔥 auth hata diya
+router.get('/admin/all', sliderController.getAllSlidersAdmin);
 
-// 1. Admin list (Saare sliders dikhayega)
-// 🔥 FIX: Aapke controller mein iska naam 'getAllSlidersAdmin' hai
-router.get('/admin/all', auth, sliderController.getAllSlidersAdmin);
+// 3. Create Slider - 🔥 auth hata diya
+router.post('/', upload.single('image'), sliderController.createSlider);
 
-// 2. Create Slider (With Image)
-router.post('/', auth, upload.single('image'), sliderController.createSlider);
+// 4. Update Slider - 🔥 auth hata diya
+router.put('/:id', upload.single('image'), sliderController.updateSlider);
 
-// 3. Update Slider
-router.put('/:id', auth, upload.single('image'), sliderController.updateSlider);
+// 5. Single Delete - 🔥 auth hata diya
+router.delete('/:id', sliderController.deleteSlider);
 
-// 4. Single Delete
-router.delete('/:id', auth, sliderController.deleteSlider);
+// 6. Bulk Delete - 🔥 auth hata diya
+router.post('/DeleteMultiple', sliderController.deleteMultipleSliders);
 
-// 5. Bulk Delete
-// 🔥 FIX: Aapke controller mein iska naam 'deleteMultipleSliders' hai
-router.post('/DeleteMultiple', auth, sliderController.deleteMultipleSliders);
-router.get('/:id', auth, sliderController.getSliderById);
+// 7. Get by ID - 🔥 auth hata diya
+router.get('/:id', sliderController.getSliderById);
+
 module.exports = router;
