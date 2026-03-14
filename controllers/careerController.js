@@ -24,19 +24,21 @@ exports.applyForJob = async (req, res) => {
         });
 
         // ==========================================
-        // 🔥 STRICT FIX: Hostinger / Cloudflare IPv6 Bypass
+        // 🔥 UPDATE: Dynamic Port & Secure Fix for Hostinger (Render Friendly)
         // ==========================================
+        const mailPort = Number(process.env.EMAIL_PORT) || 465;
+
         const transporter = nodemailer.createTransport({
             host: process.env.EMAIL_HOST || 'smtp.hostinger.com',
-            port: Number(process.env.EMAIL_PORT) || 587, // 🔥 465 ki jagah 587 (Render ENV mein bhi 587 hona chahiye)
-            secure: false, // 🔥 Port 587 ke liye iska FALSE hona zaroori hai
+            port: mailPort,
+            secure: mailPort === 465, // 🔥 Agar port 465 hai to automatic True ho jayega, 587 par False.
             requireTLS: true, // Data chori na ho isliye forcefully TLS on rakha hai
             auth: {
                 user: process.env.EMAIL_USER,
-                pass: process.env.EMAIL_PASS, // Hostinger ka normal webmail password
+                pass: process.env.EMAIL_PASS, // Hostinger ka normal 15-digit password
             },
             tls: {
-                rejectUnauthorized: false // Hostinger SSL errors ko bypass karne ke liye
+                rejectUnauthorized: false // Hostinger SSL/Cloudflare errors ko bypass karne ke liye
             }
         });
 
