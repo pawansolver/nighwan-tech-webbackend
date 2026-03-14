@@ -30,7 +30,8 @@ const allowedOrigins = [
     "https://www.nighwantech.com",
     "https://nighwan-tech.vercel.app", // Vercel link agar use ho raha hai
     "http://localhost:5000",                           // 🔥 Local Swagger Testing ke liye
-    "https://nighwan-tech-webbackend.onrender.com"     // 🔥 Live Render Swagger Testing ke liye
+    "https://nighwan-tech-webbackend.onrender.com",    // 🔥 Live Render Swagger Testing ke liye
+    "https://my-portfolio-o98df0qd4-pawan-kumars-projects-00658330.vercel.app" // 🚀 FIX: Aapka current Vercel frontend allow kar diya!
 ];
 
 app.use(cors({
