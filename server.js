@@ -5,11 +5,9 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 const path = require('path');
 
-// 📝 Swagger Imports
 const swaggerUi = require('swagger-ui-express');
-const swaggerDocument = require('./config/swagger'); // 🔥 Nayi file yahan import ho gayi!
+const swaggerDocument = require('./config/swagger');
 
-// 🗄️ Database & Routes Imports
 const { sequelize, connectDB } = require('./config/db');
 const authRoutes = require('./routes/authRoutes');
 const applyRoutes = require('./routes/applyRoutes');
@@ -21,33 +19,22 @@ dotenv.config();
 const app = express();
 
 // ==========================================
-// ⚙️ GLOBAL MIDDLEWARE (HACKER-PROOF CORS)
+// ⚙️ GLOBAL MIDDLEWARE (CORS OPENED FOR VERCEL)
 // ==========================================
-// ✅ Sirf inhi websites ko aapke backend se baat karne ki permission hai
-const allowedOrigins = [
-    "http://localhost:3000",
-    "https://nighwantech.com",
-    "https://www.nighwantech.com",
-    "https://nighwan-tech.vercel.app", // Vercel link agar use ho raha hai
-    "http://localhost:5000",                           // 🔥 Local Swagger Testing ke liye
-    "https://nighwan-tech-webbackend.onrender.com",    // 🔥 Live Render Swagger Testing ke liye
-    "https://my-portfolio-o98df0qd4-pawan-kumars-projects-00658330.vercel.app" // 🚀 FIX: Aapka current Vercel frontend allow kar diya!
-];
-
+// 🔥 FIX: Ab koi bhi Vercel link block nahi hoga! 'origin: *' kar diya hai.
 app.use(cors({
-    origin: function (origin, callback) {
-        // Allow requests with no origin (like mobile apps or curl requests) OR allowed origins
-        if (!origin || allowedOrigins.indexOf(origin) !== -1) {
-            callback(null, true);
-        } else {
-            // Hacker ya kisi anjaan website ko block karne ka error
-            callback(new Error('🚨 Security Block: Not allowed by CORS!'));
-        }
-    },
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-    credentials: true
+    origin: "*",
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
 }));
+
+// 🔥 FIX: Render ke liye extra bypass layer
+app.use((req, res, next) => {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
+    next();
+});
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -59,9 +46,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 // 📒 SWAGGER CONFIGURATION
 // ==========================================
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument, {
-    swaggerOptions: {
-        persistAuthorization: true
-    }
+    swaggerOptions: { persistAuthorization: true }
 }));
 
 // ==========================================
@@ -82,7 +67,6 @@ app.use('/api/Address', addressRoutes);
 // ==========================================
 const PORT = process.env.PORT || 5000;
 
-// 🔥 UPDATE: Render aur Cloudflare ke liye '0.0.0.0' add kar diya gaya hai!
 app.listen(PORT, '0.0.0.0', async () => {
     console.log(`🚀 Server is flying on port ${PORT}`);
     console.log(`📖 API Documentation: http://localhost:${PORT}/api-docs`);
