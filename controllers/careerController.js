@@ -24,22 +24,19 @@ exports.applyForJob = async (req, res) => {
         });
 
         // ==========================================
-        // 🛠️ YAHI CHANGE HUA HAI: Email Transporter Setup
+        // 🔥 STRICT FIX: Hostinger / Cloudflare IPv6 Bypass
         // ==========================================
         const transporter = nodemailer.createTransport({
-            host: process.env.EMAIL_HOST || 'smtp.gmail.com',
-            port: Number(process.env.EMAIL_PORT) || 465,
-            secure: true,
+            host: process.env.EMAIL_HOST || 'smtp.hostinger.com',
+            port: Number(process.env.EMAIL_PORT) || 587, // 🔥 465 ki jagah 587 (Render ENV mein bhi 587 hona chahiye)
+            secure: false, // 🔥 Port 587 ke liye iska FALSE hona zaroori hai
+            requireTLS: true, // Data chori na ho isliye forcefully TLS on rakha hai
             auth: {
                 user: process.env.EMAIL_USER,
-                pass: process.env.EMAIL_PASS, // Dhyan rahe, yahan 16-digit App password chahiye
+                pass: process.env.EMAIL_PASS, // Hostinger ka normal webmail password
             },
-            // 🔥 INDUSTRY FIX 1: Render ka IPv6 error (ENETUNREACH) block karega
-            family: 4,
-
-            // 🔥 INDUSTRY FIX 2: Cloud par SSL verification error ko rokkega
             tls: {
-                rejectUnauthorized: false
+                rejectUnauthorized: false // Hostinger SSL errors ko bypass karne ke liye
             }
         });
 
